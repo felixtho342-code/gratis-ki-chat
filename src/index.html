@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:; connect-src 'none';"
+      content="default-src 'self'; style-src 'self'; script-src 'self' https://js.puter.com; img-src 'self' data: blob:; connect-src 'self' https: wss:; frame-src https:;"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#111318" />
@@ -54,6 +54,25 @@
 
       <footer class="composer-area">
         <div id="status" class="status" role="status"></div>
+        <div class="provider-bar">
+          <label class="provider-field">
+            <span>KI-Anbieter</span>
+            <select id="provider-select" aria-label="KI-Anbieter wählen">
+              <option value="auto">Automatisch (mit Ausweichanbieter)</option>
+              <option value="pollinations">Pollinations (ohne Anmeldung)</option>
+              <option value="puter">Puter (Gratis-Kontingent)</option>
+            </select>
+          </label>
+          <label class="provider-field model-field" id="puter-model-field" hidden>
+            <span>Gratis-Modell</span>
+            <select id="puter-model-select" aria-label="Puter-Gratis-Modell" disabled>
+              <option value="">Modelle werden geladen ...</option>
+            </select>
+          </label>
+          <button id="puter-login-button" class="quiet-button login-button" type="button" hidden>
+            Mit Puter anmelden
+          </button>
+        </div>
         <form id="composer" class="composer">
           <textarea
             id="prompt"
@@ -82,9 +101,9 @@
         </form>
         <p class="disclaimer">
           Kostenloser Dienst ohne eigenen API-Schlüssel. Antworten können
-          ungenau sein. Freie Nutzung ist begrenzt (meist mindestens 30 Sek.
-          zwischen Anfragen). Spracheingabe nutzt den Online-Spracherkennungsdienst
-          deines Systems.
+          ungenau sein. Pollinations und Puter haben eigene Gratis-Limits;
+          Ausweichen hebt diese Limits nicht auf. Spracheingabe nutzt den
+          Online-Spracherkennungsdienst deines Systems.
         </p>
       </footer>
     </div>

@@ -9,12 +9,19 @@ const clearButton = document.getElementById("clear-button");
 const updatesButton = document.getElementById("updates-button");
 const exportButton = document.getElementById("export-button");
 const voiceButton = document.getElementById("voice-button");
+const providerSelect = document.getElementById("provider-select");
+const puterModelField = document.getElementById("puter-model-field");
+const puterModelSelect = document.getElementById("puter-model-select");
+const puterLoginButton = document.getElementById("puter-login-button");
 
 const STORAGE_KEY = "gratis-ki-chat-messages";
 let messages = loadMessages();
 let busy = false;
 let recognition = null;
 let voiceError = false;
+let puterSdkPromise;
+let puterModels = [];
+let puterSignedIn = false;
 
 function loadMessages() {
   try {
@@ -150,6 +157,129 @@ function configureVoiceInput() {
   voiceButton.disabled = false;
 }
 
+function loadPuterSdk() {
+  if (window.puter) return Promise.resolve(window.puter);
+  if (puterSdkPromise) return puterSdkPromise;
+
+  puterSdkPromise = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "https://js.puter.com/v2/";
+    script.onload = () => {
+      if (window.puter) {
+        resolve(window.puter);
+      } else {
+        reject(new Error("Puter.js wurde geladen, ist aber nicht verfügbar."));
+      }
+    };
+    script.onerror = () => reject(new Error("Puter.js konnte nicht geladen werden."));
+    document.head.append(script);
+  });
+  return puterSdkPromise;
+}
+
+function isFreePuterModel(model) {
+  if (!model || typeof model.id !== "string") return false;
+  if (model.id.endsWith(":free")) return true;
+  const cost = model.cost;
+  return Boolean(
+    cost &&
+      cost.currency === "usd-cents" &&
+      Number(cost.input) === 0 &&
+      Number(cost.output) === 0
+  );
+}
+
+async function loadPuterModels() {
+  try {
+    const puter = await loadPuterSdk();
+    puterSignedIn = await puter.auth.isSignedIn();
+    const models = await puter.ai.listModels();
+    puterModels = models.filter(isFreePuterModel);
+    puterModelSelect.replaceChildren();
+
+    if (puterModels.length === 0) {
+      puterModelSelect.add(new Option("Derzeit keine Gratis-Modelle", ""));
+      puterModelSelect.disabled = true;
+      updateProviderControls();
+      return;
+    }
+
+    for (const model of puterModels) {
+      const label = model.name ? `${model.name} (${model.provider})` : model.id;
+      puterModelSelect.add(new Option(label, model.id));
+    }
+    puterModelSelect.disabled = !puterSignedIn;
+    updateProviderControls();
+  } catch (error) {
+    puterModelSelect.replaceChildren(new Option("Modelle nicht erreichbar", ""));
+    puterModelSelect.disabled = true;
+    setStatus(
+      `Puter-Modelle konnten nicht geladen werden: ${error.message}`,
+      true
+    );
+  }
+}
+
+function updateProviderControls() {
+  const usePuter = providerSelect.value === "puter";
+  puterModelField.hidden = !usePuter;
+  puterLoginButton.hidden =
+    providerSelect.value === "pollinations" || puterSignedIn;
+  puterLoginButton.textContent = usePuter
+    ? "Mit Puter anmelden"
+    : "Ausweichanbieter verbinden";
+  puterModelSelect.disabled = !puterSignedIn || puterModels.length === 0;
+  if (usePuter && !puterSignedIn) {
+    setStatus("Puter benötigt eine kostenlose Anmeldung und ein eigenes Gratis-Kontingent.");
+  }
+}
+
+function isPollinationsRateLimited(error) {
+  return /Pollinations.*HTTP (402|429)|HTTP (402|429)/i.test(error.message || "");
+}
+
+async function sendWithPuter(requestMessages) {
+  if (!puterSignedIn || puterModels.length === 0) {
+    await loadPuterModels();
+  }
+  if (!puterSignedIn) {
+    throw new Error(
+      "Der Pollinations-Dienst ist ausgelastet. Melde dich kostenlos bei Puter an, um den Ausweichanbieter zu nutzen."
+    );
+  }
+  if (!puterModelSelect.value && puterModels.length > 0) {
+    puterModelSelect.value = puterModels[0].id;
+  }
+  const model = puterModelSelect.value;
+  if (!model || !puterModels.some((entry) => entry.id === model)) {
+    throw new Error("Bitte wähle ein verfügbares Puter-Gratis-Modell.");
+  }
+
+  const puter = await loadPuterSdk();
+  const result = await puter.ai.chat(
+    [
+      {
+        role: "system",
+        content:
+          "Du bist ein hilfreicher KI-Assistent. Antworte klar und auf Deutsch, ausser der Nutzer wuenscht eine andere Sprache."
+      },
+      ...requestMessages
+    ],
+    { model }
+  );
+  const content = result?.message?.content ?? result?.content ?? result;
+  if (typeof content === "string" && content.trim()) return content.trim();
+  if (Array.isArray(content)) {
+    const text = content
+      .filter((part) => part && typeof part.text === "string")
+      .map((part) => part.text)
+      .join("")
+      .trim();
+    if (text) return text;
+  }
+  throw new Error("Das ausgewählte Puter-Modell hat keinen Text zurückgegeben.");
+}
+
 async function submitMessage(text) {
   const content = text.trim();
   if (!content || busy) return;
@@ -170,7 +300,20 @@ async function submitMessage(text) {
     }));
 
   try {
-    const answer = await window.chatApp.sendMessage(requestMessages);
+    let answer;
+    if (providerSelect.value === "puter") {
+      answer = await sendWithPuter(requestMessages);
+    } else {
+      try {
+        answer = await window.chatApp.sendMessage(requestMessages);
+      } catch (error) {
+        if (providerSelect.value !== "auto" || !isPollinationsRateLimited(error)) {
+          throw error;
+        }
+        setStatus("Pollinations ist ausgelastet – wechsle zum Puter-Ausweichanbieter ...");
+        answer = await sendWithPuter(requestMessages);
+      }
+    }
     messages.push({ role: "assistant", content: answer });
     saveMessages();
     renderMessages();
@@ -257,6 +400,39 @@ voiceButton.addEventListener("click", () => {
   }
 });
 
+providerSelect.addEventListener("change", updateProviderControls);
+
+puterLoginButton.addEventListener("click", async () => {
+  puterLoginButton.disabled = true;
+  setStatus("Puter wird geladen ...");
+  try {
+    const puter = window.puter;
+    if (!puter) {
+      await loadPuterSdk();
+      setStatus("Puter ist bereit. Klicke erneut auf Anmelden.");
+      return;
+    }
+
+    await puter.auth.signIn();
+    puterSignedIn = await puter.auth.isSignedIn();
+    if (!puterSignedIn) {
+      throw new Error("Die Puter-Anmeldung wurde nicht bestätigt.");
+    }
+    puterLoginButton.hidden = true;
+    setStatus("Bei Puter angemeldet. Gratis-Modelle werden geladen.");
+    await loadPuterModels();
+    updateProviderControls();
+  } catch (error) {
+    setStatus(`Puter-Anmeldung fehlgeschlagen: ${error.message}`, true);
+  } finally {
+    puterLoginButton.disabled = false;
+  }
+});
+
+providerSelect.addEventListener("focus", () => {
+  loadPuterModels();
+});
+
 updatesButton.addEventListener("click", async () => {
   updatesButton.disabled = true;
   setStatus("Suche nach Updates ...");
@@ -273,6 +449,15 @@ updatesButton.addEventListener("click", async () => {
 });
 
 configureVoiceInput();
+updateProviderControls();
+loadPuterSdk()
+  .then(async (puter) => {
+    puterSignedIn = await puter.auth.isSignedIn();
+    updateProviderControls();
+  })
+  .catch((error) => {
+    console.error("Puter-Ausweichanbieter konnte nicht vorbereitet werden.", error);
+  });
 window.chatApp.onUpdateStatus((update) => {
   switch (update.status) {
     case "checking":

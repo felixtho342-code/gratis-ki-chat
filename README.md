@@ -17,10 +17,18 @@ npm start
 ```
 
 Der kostenlose Dienst wird ohne Verfügbarkeitsgarantie angeboten und begrenzt
-anonyme Anfragen. Bei HTTP 402 bitte mindestens 30 Sekunden warten. Die
-Nachrichten werden zur Beantwortung an Pollinations.ai übertragen; beachte
+anonyme Anfragen. Bei Drosselung kann der Chat auf Puter.js ausweichen. Puter
+benötigt eine kostenlose Anmeldung und hat ein eigenes monatliches Gratis-
+Kontingent sowie Request-Limits; kein Anbieter garantiert unbegrenzte Anfragen
+oder völlige Cooldown-Freiheit. Du kannst im Chat zwischen automatischer
+Auswahl, Pollinations und Puter wählen. Für Puter werden verfügbare kostenlose
+Modelle dynamisch aufgelistet. Die Nachrichten werden zur Beantwortung an den
+jeweiligen Anbieter übertragen; beachte
 dessen [Datenschutzbestimmungen](https://pollinations.ai/privacy) und
 [Nutzungsbedingungen](https://pollinations.ai/terms).
+Puter weist auf seine
+[Datenschutzbestimmungen](https://puter.com/privacy) und
+[Nutzungsbedingungen](https://puter.com/terms) hin.
 
 ## Sprache und Chat-Export
 
@@ -44,7 +52,7 @@ zuerst in ein öffentliches GitHub-Repository gepusht werden; `GITHUB_REPOSITORY
 ## Releases und automatische Updates
 
 Der Workflow `.github/workflows/release.yml` erstellt bei einem Git-Tag wie
-`v1.0.2` einen Windows-Installer und veröffentlicht ihn als GitHub Release.
+`v1.0.4` einen Windows-Installer und veröffentlicht ihn als GitHub Release.
 Die veröffentlichten Metadaten werden vom eingebauten Updater verwendet.
 Auf Windows werden neue Versionen beim Start und danach alle sechs Stunden
 geprüft, automatisch heruntergeladen und beim Beenden installiert.
@@ -55,8 +63,8 @@ Für einen Release:
 2. Ein passendes Tag erstellen und pushen, zum Beispiel:
 
    ```powershell
-   git tag v1.0.2
-   git push origin v1.0.2
+   git tag v1.0.4
+   git push origin v1.0.4
    ```
 
 3. Im GitHub-Repository unter **Settings → Actions → General** erlauben, dass

@@ -301,6 +301,59 @@ button {
   color: #ff9999;
 }
 
+.provider-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+  margin: 0 0 9px;
+}
+
+.provider-field {
+  display: grid;
+  gap: 4px;
+  min-width: 190px;
+}
+
+.provider-field span {
+  padding-left: 3px;
+  color: #858b99;
+  font-size: 10px;
+}
+
+.provider-field select {
+  max-width: 100%;
+  padding: 7px 28px 7px 9px;
+  color: #dfe1e8;
+  background: #191c24;
+  border: 1px solid #353945;
+  border-radius: 8px;
+  outline: 0;
+  font-size: 11px;
+}
+
+.provider-field select:focus {
+  border-color: #665b94;
+}
+
+.provider-field select:disabled {
+  color: #777d8b;
+}
+
+.model-field {
+  flex: 1;
+}
+
+.model-field select {
+  width: 100%;
+}
+
+.login-button {
+  padding: 7px 9px;
+  border-color: #39334e;
+  font-size: 11px;
+}
+
 .composer {
   display: flex;
   align-items: flex-end;
@@ -452,6 +505,15 @@ button {
   .quiet-button {
     padding: 7px 5px;
     font-size: 9px;
+  }
+
+  .provider-bar {
+    gap: 6px;
+  }
+
+  .provider-field {
+    flex: 1;
+    min-width: 145px;
   }
 
   .welcome {

@@ -85,11 +85,11 @@ ipcMain.handle("chat:send", async (_event, messages) => {
     if (!response.ok) {
       if (response.status === 402) {
         throw new Error(
-          "Der kostenlose Dienst ist gerade ausgelastet. Bitte warte mindestens 30 Sekunden und versuche es erneut."
+          "Der kostenlose Pollinations-Dienst ist gerade ausgelastet (HTTP 402)."
         );
       }
       throw new Error(
-        `Der KI-Dienst antwortete mit HTTP ${response.status}: ${answer.slice(0, 300)}`
+        `Der kostenlose Pollinations-Dienst antwortete mit HTTP ${response.status}: ${answer.slice(0, 300)}`
       );
     }
     if (!answer) {
