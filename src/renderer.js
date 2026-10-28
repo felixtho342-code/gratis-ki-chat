@@ -264,8 +264,6 @@ updatesButton.addEventListener("click", async () => {
     const result = await window.chatApp.checkForUpdates();
     if (result.status === "dev") {
       setStatus("Updates sind im Entwicklungsmodus nicht verfügbar.");
-    } else if (result.status === "unconfigured") {
-      setStatus("Updates werden aktiviert, sobald ein Release im Projekt-Repository veröffentlicht ist.");
     }
   } catch (error) {
     setStatus(error.message || "Die Update-Prüfung ist fehlgeschlagen.", true);

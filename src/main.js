@@ -1,17 +1,18 @@
 const path = require("node:path");
-const fs = require("node:fs");
 const { app, BrowserWindow, ipcMain, session } = require("electron");
 const { autoUpdater } = require("electron-updater");
 
 const CHAT_ENDPOINT = "https://text.pollinations.ai/";
+const UPDATE_REPOSITORY = {
+  provider: "github",
+  owner: "felixtho342-code",
+  repo: "gratis-ki-chat",
+  releaseType: "release"
+};
 const MAX_MESSAGES = 20;
 const MAX_MESSAGE_LENGTH = 12000;
 
 let mainWindow;
-
-function hasUpdateFeed() {
-  return fs.existsSync(path.join(process.resourcesPath, "app-update.yml"));
-}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -110,9 +111,6 @@ ipcMain.handle("updates:check", async () => {
   if (!app.isPackaged) {
     return { status: "dev" };
   }
-  if (!hasUpdateFeed()) {
-    return { status: "unconfigured" };
-  }
 
   try {
     const result = await autoUpdater.checkForUpdates();
@@ -130,6 +128,10 @@ ipcMain.handle("updates:check", async () => {
 });
 
 app.whenReady().then(() => {
+  autoUpdater.setFeedURL(UPDATE_REPOSITORY);
+  autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
+
   session.defaultSession.setPermissionRequestHandler(
     (webContents, permission, callback) => {
       callback(
@@ -172,9 +174,7 @@ app.whenReady().then(() => {
     });
   });
 
-  if (app.isPackaged && hasUpdateFeed()) {
-    autoUpdater.autoDownload = true;
-    autoUpdater.autoInstallOnAppQuit = true;
+  if (app.isPackaged) {
     setTimeout(() => {
       autoUpdater.checkForUpdates().catch((error) => {
         sendUpdateStatus({
