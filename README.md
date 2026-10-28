@@ -22,6 +22,14 @@ Nachrichten werden zur Beantwortung an Pollinations.ai übertragen; beachte
 dessen [Datenschutzbestimmungen](https://pollinations.ai/privacy) und
 [Nutzungsbedingungen](https://pollinations.ai/terms).
 
+## Sprache und Chat-Export
+
+Über das Mikrofon kannst du Text diktieren. Die Spracherkennung benötigt eine
+Internetverbindung und kann Audio an den Spracherkennungsdienst des Systems
+übertragen. Antworten lassen sich über **Vorlesen** mit der Systemstimme
+abspielen. **Chat exportieren** speichert den aktuellen Verlauf als Markdown
+im Download-Ordner. Der Verlauf wird außerdem lokal im App-Profil gespeichert.
+
 ## Windows-Installer
 
 ```powershell
@@ -36,7 +44,7 @@ zuerst in ein öffentliches GitHub-Repository gepusht werden; `GITHUB_REPOSITORY
 ## Releases und automatische Updates
 
 Der Workflow `.github/workflows/release.yml` erstellt bei einem Git-Tag wie
-`v1.0.1` einen Windows-Installer und veröffentlicht ihn als GitHub Release.
+`v1.0.2` einen Windows-Installer und veröffentlicht ihn als GitHub Release.
 Die veröffentlichten Metadaten werden vom eingebauten Updater verwendet.
 Auf Windows werden neue Versionen beim Start und danach alle sechs Stunden
 geprüft, automatisch heruntergeladen und beim Beenden installiert.
@@ -47,8 +55,8 @@ Für einen Release:
 2. Ein passendes Tag erstellen und pushen, zum Beispiel:
 
    ```powershell
-   git tag v1.0.1
-   git push origin v1.0.1
+   git tag v1.0.2
+   git push origin v1.0.2
    ```
 
 3. Im GitHub-Repository unter **Settings → Actions → General** erlauben, dass

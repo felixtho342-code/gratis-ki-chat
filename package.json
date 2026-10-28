@@ -1,6 +1,6 @@
 {
   "name": "gratis-ki-chat",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Ein kostenloser KI-Chat ohne lokale Modelle oder eigene API-Schluessel.",
   "main": "src/main.js",
   "scripts": {

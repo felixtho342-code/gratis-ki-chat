@@ -1,6 +1,6 @@
 const path = require("node:path");
 const fs = require("node:fs");
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, session } = require("electron");
 const { autoUpdater } = require("electron-updater");
 
 const CHAT_ENDPOINT = "https://text.pollinations.ai/";
@@ -130,6 +130,15 @@ ipcMain.handle("updates:check", async () => {
 });
 
 app.whenReady().then(() => {
+  session.defaultSession.setPermissionRequestHandler(
+    (webContents, permission, callback) => {
+      callback(
+        permission === "media" &&
+          webContents.getURL().startsWith("file://")
+      );
+    }
+  );
+
   createWindow();
 
   autoUpdater.on("checking-for-update", () => {

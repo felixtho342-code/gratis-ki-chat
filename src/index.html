@@ -22,6 +22,9 @@
           </div>
         </div>
         <div class="header-actions">
+          <button id="export-button" class="quiet-button" type="button" title="Chat als Textdatei exportieren">
+            Chat exportieren
+          </button>
           <button id="updates-button" class="quiet-button" type="button">
             Nach Updates suchen
           </button>
@@ -59,6 +62,18 @@
             placeholder="Nachricht an die KI ..."
             aria-label="Nachricht an die KI"
           ></textarea>
+          <button
+            id="voice-button"
+            class="icon-button"
+            type="button"
+            aria-label="Spracheingabe starten"
+            title="Spracheingabe"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="9" y="3" width="6" height="12" rx="3" />
+              <path d="M5 11a7 7 0 0 0 14 0M12 18v3m-4 0h8" />
+            </svg>
+          </button>
           <button id="send-button" class="send-button" type="submit" aria-label="Senden">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 19V5m-7 7 7-7 7 7" />
@@ -68,7 +83,8 @@
         <p class="disclaimer">
           Kostenloser Dienst ohne eigenen API-Schlüssel. Antworten können
           ungenau sein. Freie Nutzung ist begrenzt (meist mindestens 30 Sek.
-          zwischen Anfragen).
+          zwischen Anfragen). Spracheingabe nutzt den Online-Spracherkennungsdienst
+          deines Systems.
         </p>
       </footer>
     </div>

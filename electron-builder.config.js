@@ -13,6 +13,7 @@ module.exports = {
     "!**/*.map"
   ],
   win: {
+    icon: "assets/app-icon.ico",
     target: [
       {
         target: "nsis",
@@ -24,7 +25,9 @@ module.exports = {
     oneClick: false,
     allowToChangeInstallationDirectory: true,
     createDesktopShortcut: true,
-    createStartMenuShortcut: true
+    createStartMenuShortcut: true,
+    installerIcon: "assets/app-icon.ico",
+    uninstallerIcon: "assets/app-icon.ico"
   },
   ...(owner && repo
     ? {
