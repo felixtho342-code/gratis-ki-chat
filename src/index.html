@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:; connect-src 'none';"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111318" />
+    <title>Gratis KI Chat</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">✦</div>
+          <div>
+            <h1>KI Chat</h1>
+            <p><span class="online-dot"></span> Kostenloser Chat</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="updates-button" class="quiet-button" type="button">
+            Nach Updates suchen
+          </button>
+          <button id="clear-button" class="quiet-button" type="button">
+            Chat leeren
+          </button>
+        </div>
+      </header>
+
+      <main id="chat" class="chat" aria-live="polite">
+        <section id="welcome" class="welcome">
+          <div class="welcome-icon" aria-hidden="true">✦</div>
+          <p class="eyebrow">DEIN KI-ASSISTENT</p>
+          <h2>Was möchtest du wissen?</h2>
+          <p class="welcome-copy">
+            Schreib einfach los. Deine Unterhaltung wird nur auf diesem Gerät
+            gespeichert.
+          </p>
+          <div class="suggestions">
+            <button type="button" class="suggestion">Erkläre mir ein schwieriges Thema</button>
+            <button type="button" class="suggestion">Hilf mir, einen Text zu schreiben</button>
+            <button type="button" class="suggestion">Gib mir Ideen für ein Projekt</button>
+          </div>
+        </section>
+        <div id="messages" class="messages"></div>
+      </main>
+
+      <footer class="composer-area">
+        <div id="status" class="status" role="status"></div>
+        <form id="composer" class="composer">
+          <textarea
+            id="prompt"
+            rows="1"
+            maxlength="12000"
+            placeholder="Nachricht an die KI ..."
+            aria-label="Nachricht an die KI"
+          ></textarea>
+          <button id="send-button" class="send-button" type="submit" aria-label="Senden">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 19V5m-7 7 7-7 7 7" />
+            </svg>
+          </button>
+        </form>
+        <p class="disclaimer">
+          Kostenloser Dienst ohne eigenen API-Schlüssel. Antworten können
+          ungenau sein. Freie Nutzung ist begrenzt (meist mindestens 30 Sek.
+          zwischen Anfragen).
+        </p>
+      </footer>
+    </div>
+    <script src="renderer.js"></script>
+  </body>
+</html>
